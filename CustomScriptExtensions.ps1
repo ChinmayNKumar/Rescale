@@ -1,4 +1,5 @@
-#Script that demonstrates how to deploy apps to an Azure VM using Custom Script Extensions
+#Script that demonstrates how to deploy custom apps to an Azure VM using Custom Script Extensions
+#In this script, we are creating all resources and assuming nothing has already been created. It can be modified accordingly for already existing resources.
 
 #Install-Module AzureRM - Install the AzureRM module if not installed
 Import-Module AzureRM #Import the AzureRM module
