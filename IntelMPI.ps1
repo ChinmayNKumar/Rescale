@@ -1,4 +1,4 @@
-﻿#Script to show how Intel MPI HPC ndoes work with AD auth.
+﻿#Script to show how Intel MPI HPC nodes work with AD authentication
 #This script shows how to use domain-based authorization method with the delegation ability
 
 #Import the AD module
