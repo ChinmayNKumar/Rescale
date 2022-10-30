@@ -1,4 +1,4 @@
-﻿#Script that demonstrates how to deploy apps to an Azure VM using Custom Script Extensions
+#Script that demonstrates how to deploy apps to an Azure VM using Custom Script Extensions
 
 #Install-Module AzureRM - Install the AzureRM module if not installed
 Import-Module AzureRM #Import the AzureRM module
@@ -9,9 +9,14 @@ $pscredential = Get-Credential #Get the service principal's credentials as an ob
 Connect-AzureRmAccount -ServicePrincipal -Credential $pscredential -TenantId $tenantid
 
 #Resource Group setup
-New-AzureRmResourceGroup -Name VMLab -Location EastUS#Storage Account setup$storageAccount = New-AzureRmStorageAccount -ResourceGroupName VMLab `
+New-AzureRmResourceGroup -Name VMLab -Location EastUS
+
+#Storage Account setup
+$storageAccount = New-AzureRmStorageAccount -ResourceGroupName VMLab `
 -Name "CKTest" `
--Location EastUS `-SkuName Standard_LRS `-Kind Storage
+-Location EastUS `
+-SkuName Standard_LRS `
+-Kind Storage
 
 #Set Storage Account Context
 $ctx = $storageAccount.Context
@@ -28,12 +33,24 @@ New-AzureStorageShare `
 New-AzureStorageDirectory `
  -Context $ctx `
  -ShareName "fileshare" `
- -Path "AntivirusSoftware" #Uploading the installer exe to the file share above. We're using Sophos Free Antivirus as an example Set-AzureStorageFileContent `
+ -Path "AntivirusSoftware"
+
+ #Uploading the installer exe to the file share above. We're using Sophos Free Antivirus as an example
+
+ Set-AzureStorageFileContent `
  -Context $ctx `
  -ShareName "fileshare" `
  -Source "pathtoinstaller" `
- -Path "AntivirusSoftware/SophosInstall.exe"#The InstallSophos.ps1 script will contain the following:#$password = Get-AzureRmStorageAccountKey -ResourceGroupName "VMLab" -AccountName "CKTest"#cmdkey /add:CKTest.file.core.windows.net /user:AZURE\CKTest /pass:$password 
-#\\CKTest.file.core.windows.net\fileshare\AntivirusSoftware\SophosInstall.exe /SP- /SILENT /NOCANCEL#Uploading the installer script to the blob containerSet-AzureStorageBlobContent `
+ -Path "AntivirusSoftware/SophosInstall.exe"
+
+
+#The InstallSophos.ps1 script will contain the following:
+#$password = Get-AzureRmStorageAccountKey -ResourceGroupName "VMLab" -AccountName "CKTest"
+#cmdkey /add:CKTest.file.core.windows.net /user:AZURE\CKTest /pass:$password 
+#\\CKTest.file.core.windows.net\fileshare\AntivirusSoftware\SophosInstall.exe /SP- /SILENT /NOCANCEL
+
+#Uploading the installer script to the blob container
+Set-AzureStorageBlobContent `
 -File "C:\users\chinm\Downloads\InstallSophos.ps1" `
 -Container scripts `
 -Blob "InstallSophos.ps1" `
@@ -65,4 +82,7 @@ $storageKey = Get-AzureRmStorageAccountKey -ResourceGroupName "VMLab" -AccountNa
 -StorageAccountKey $storageKey `
 -FileName InstallSophos.ps1 `
 -ContainerName scripts `
--Run InstallSophos.ps1#Disconnect AzureRm sessionDisconnect-AzureRmAccount
+-Run InstallSophos.ps1
+
+#Disconnect AzureRm session
+Disconnect-AzureRmAccount
